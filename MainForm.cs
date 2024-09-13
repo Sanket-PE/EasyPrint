@@ -21,9 +21,13 @@ namespace EasyPrint
             buttonPrint.Click += new EventHandler(ButtonPrint_Click);
             buttonPreview.Click += new EventHandler(ButtonPreview_Click);
             buttonClose.Click += new EventHandler(ButtonClose_Click);
-            buttonHow.Click += new EventHandler(ButtonHow_Click);                    
+            buttonHow.Click += new EventHandler(ButtonHow_Click);
+            this.FormClosing += MainForm_FormClosing;
         }
-
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            PrintHelper.DeleteRectangles(this);
+        }
         private void ButtonClose_Click(object sender, EventArgs e)
         {
             this.Close();

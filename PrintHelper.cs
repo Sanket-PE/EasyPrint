@@ -146,18 +146,50 @@ namespace EasyPrint
             Database db = doc.Database;
 
             Autodesk.AutoCAD.ApplicationServices.Application.SetSystemVariable("BACKGROUNDPLOT", 0);
-            MessageBox.Show($"Printer: {printer}, PaperSize: {paperSize}, PlotStyle: {plotStyle}, Copies: {copies}, Orientation: {orientation}");
+            List<ObjectId> rectangleIds = new List<ObjectId>();
+            //MessageBox.Show($"Printer: {printer}, PaperSize: {paperSize}, PlotStyle: {plotStyle}, Copies: {copies}, Orientation: {orientation}");
             try
             {
-                for (int i = 0; i < copies; i++)
+                using(Transaction tr = db.TransactionManager.StartTransaction())
                 {
-                    using (Transaction tr = db.TransactionManager.StartTransaction())
+                    // Create a new layer for the rectangles
+                    LayerTable lt = (LayerTable)tr.GetObject(db.LayerTableId, OpenMode.ForRead);
+                    if (!lt.Has("_EP"))
                     {
+                        lt.UpgradeOpen();
+                        LayerTableRecord ltr = new LayerTableRecord
+                        {
+                            Name = "_EP",
+                            Color = Autodesk.AutoCAD.Colors.Color.FromColor(System.Drawing.Color.Red)
+                        };
+                        lt.Add(ltr);
+                        tr.AddNewlyCreatedDBObject(ltr, true);
+                    }
+                
+                
+                    for (int i = 0; i < copies; i++)
+                    {
+                        
                         foreach (BlockReference blockRef in blocks)
                         {
                             Extents3d extents3d = blockRef.GeometricExtents;
                             Point2d minPoint = new Point2d(extents3d.MinPoint.X, extents3d.MinPoint.Y);
                             Point2d maxPoint = new Point2d(extents3d.MaxPoint.X, extents3d.MaxPoint.Y);
+
+                            // Create a rectanlge around the block
+                            Polyline rectangle = new Polyline();
+                            rectangle.AddVertexAt(0, minPoint, 0, 0, 0);
+                            rectangle.AddVertexAt(1, new Point2d(maxPoint.X, minPoint.Y), 0, 0, 0);
+                            rectangle.AddVertexAt(2, maxPoint, 0, 0, 0);
+                            rectangle.AddVertexAt(3, new Point2d(minPoint.X, maxPoint.Y), 0, 0, 0);
+                            rectangle.Closed = true;
+                            rectangle.Layer = "_EP";
+
+                            BlockTableRecord btrr = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
+                            btrr.AppendEntity(rectangle);
+                            tr.AddNewlyCreatedDBObject(rectangle, true);
+
+                            rectangleIds.Add(rectangle.ObjectId);
 
                             //MessageBox.Show($"\nPrinting block: {blockRef.Name}");
                             //MessageBox.Show($"\nPrinting min: {minPoint},max: {maxPoint}");
@@ -261,9 +293,9 @@ namespace EasyPrint
                                 tr2.Commit();
                             }                            
                         }
-                        tr.Commit();
+                            tr.Commit();
+                        }
                     }
-                }
             }
             catch (System.Exception ex)
             {
@@ -272,7 +304,8 @@ namespace EasyPrint
             finally
             {
                 mainForm.WindowState = FormWindowState.Normal;
-            }                
+            }
+            mainForm.Tag = rectangleIds;
         }
         // Preview Function.
         public static void PreviewBlocks(List<BlockReference> blocks, string printer, string paperSize, string plotStyle, string orientation, MainForm mainForm)
@@ -452,6 +485,31 @@ namespace EasyPrint
             string logFilePath = "error.log";
             string logMessage = $"{System.DateTime.Now}: {ex.Message}\n{ex.StackTrace}\n";
             File.AppendAllText(logFilePath, logMessage);
+        }
+        public static void DeleteRectangles(MainForm mainForm)
+        {
+            if (mainForm.Tag is List<ObjectId> rectangleIds)
+            {
+                Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+                Database db = doc.Database;
+
+                try
+                {
+                    using (Transaction tr = db.TransactionManager.StartTransaction())
+                    {
+                        foreach (ObjectId rectId in rectangleIds)
+                        {
+                            Entity ent = (Entity)tr.GetObject(rectId, OpenMode.ForWrite);
+                            ent.Erase();
+                        }
+                        tr.Commit();
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    LogError(ex);
+                }
+            }
         }
 
     }
