@@ -55,7 +55,7 @@ namespace EasyPrint
             {
                 LogError(ex);
             }
-            MessageBox.Show($"Retrieved {blocks.Count} blocks with name {blockName}");
+            //MessageBox.Show($"Retrieved {blocks.Count} blocks with name {blockName}");
             return blocks;
         }
 
@@ -137,7 +137,50 @@ namespace EasyPrint
             return PlotRotation.Degrees000; // Default to 0 degrees if no match
         }
 
+        public static void AddLayer(Database db, string layerName, Autodesk.AutoCAD.Colors.Color color)
+        {
+            using (Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                LayerTable lt = (LayerTable)tr.GetObject(db.LayerTableId, OpenMode.ForRead);
+                if (!lt.Has(layerName))
+                {
+                    lt.UpgradeOpen();
+                    LayerTableRecord ltr = new LayerTableRecord
+                    {
+                        Name = layerName,
+                        Color = color
+                    };
+                    lt.Add(ltr);
+                    tr.AddNewlyCreatedDBObject(ltr, true);
+                }
+                tr.Commit();
+            }
+        }
 
+        public static ObjectId AddRectangle(Database db, Point2d minPoint, Point2d maxPoint, string layerName)
+        {
+            ObjectId rectId = ObjectId.Null;
+
+            using (Transaction tr = db.TransactionManager.StartTransaction())
+            {
+                BlockTableRecord btr = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
+
+                Polyline rectangle = new Polyline();
+                rectangle.AddVertexAt(0, minPoint, 0, 0, 0);
+                rectangle.AddVertexAt(1, new Point2d(maxPoint.X, minPoint.Y), 0, 0, 0);
+                rectangle.AddVertexAt(2, maxPoint, 0, 0, 0);
+                rectangle.AddVertexAt(3, new Point2d(minPoint.X, maxPoint.Y), 0, 0, 0);
+                rectangle.Closed = true;
+                rectangle.Layer = layerName;
+
+                rectId = btr.AppendEntity(rectangle);
+                tr.AddNewlyCreatedDBObject(rectangle, true);
+
+                tr.Commit();
+            }
+
+            return rectId;
+        }
         //Print Function.
         public static void PrintBlocks(List<BlockReference> blocks, string printer, string paperSize, string plotStyle, int copies, string orientation, MainForm mainForm)
         {
@@ -150,50 +193,25 @@ namespace EasyPrint
             //MessageBox.Show($"Printer: {printer}, PaperSize: {paperSize}, PlotStyle: {plotStyle}, Copies: {copies}, Orientation: {orientation}");
             try
             {
-                using(Transaction tr = db.TransactionManager.StartTransaction())
+                using (DocumentLock documentLock = doc.LockDocument())
                 {
-                    // Create a new layer for the rectangles
-                    LayerTable lt = (LayerTable)tr.GetObject(db.LayerTableId, OpenMode.ForRead);
-                    if (!lt.Has("_EP"))
-                    {
-                        lt.UpgradeOpen();
-                        LayerTableRecord ltr = new LayerTableRecord
-                        {
-                            Name = "_EP",
-                            Color = Autodesk.AutoCAD.Colors.Color.FromColor(System.Drawing.Color.Red)
-                        };
-                        lt.Add(ltr);
-                        tr.AddNewlyCreatedDBObject(ltr, true);
-                    }
-                
-                
+                    // Delete existing rectangles
+                    DeleteExistingRectangles(db, "_EP");
+
+                    // Add the _EP layer
+                    AddLayer(db, "_EP", Autodesk.AutoCAD.Colors.Color.FromColor(System.Drawing.Color.Red));
+
                     for (int i = 0; i < copies; i++)
                     {
-                        
+
                         foreach (BlockReference blockRef in blocks)
                         {
                             Extents3d extents3d = blockRef.GeometricExtents;
                             Point2d minPoint = new Point2d(extents3d.MinPoint.X, extents3d.MinPoint.Y);
                             Point2d maxPoint = new Point2d(extents3d.MaxPoint.X, extents3d.MaxPoint.Y);
 
-                            // Create a rectanlge around the block
-                            Polyline rectangle = new Polyline();
-                            rectangle.AddVertexAt(0, minPoint, 0, 0, 0);
-                            rectangle.AddVertexAt(1, new Point2d(maxPoint.X, minPoint.Y), 0, 0, 0);
-                            rectangle.AddVertexAt(2, maxPoint, 0, 0, 0);
-                            rectangle.AddVertexAt(3, new Point2d(minPoint.X, maxPoint.Y), 0, 0, 0);
-                            rectangle.Closed = true;
-                            rectangle.Layer = "_EP";
-
-                            BlockTableRecord btrr = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
-                            btrr.AppendEntity(rectangle);
-                            tr.AddNewlyCreatedDBObject(rectangle, true);
-
-                            rectangleIds.Add(rectangle.ObjectId);
-
-                            //MessageBox.Show($"\nPrinting block: {blockRef.Name}");
-                            //MessageBox.Show($"\nPrinting min: {minPoint},max: {maxPoint}");
-
+                            //MessageBox.Show($"\nPrinting block: {blockRef.Name},min: {minPoint},max: {maxPoint}");
+                           
                             using (Transaction tr2 = db.TransactionManager.StartTransaction())
                             {
                                 // We'll be plotting the current layout
@@ -220,7 +238,7 @@ namespace EasyPrint
                                 psv.SetPlotConfigurationName(ps, printer, paperSize);
 
                                 //Determine plot rotation based on orientation and block rotation
-                                string blockOrientation = orientation == "Auto" ? DetermineOrientation(minPoint, maxPoint) : orientation;                              
+                                string blockOrientation = orientation == "Auto" ? DetermineOrientation(minPoint, maxPoint) : orientation;
                                 double blockRotation = blockRef.Rotation * (180.0 / Math.PI); // Convert radians to degrees
                                 PlotRotation plotRotation = GetPlotRotation(blockOrientation, blockRotation);
                                 psv.SetPlotRotation(ps, plotRotation);
@@ -228,6 +246,8 @@ namespace EasyPrint
 
                                 // Apply plot style
                                 psv.SetCurrentStyleSheet(ps, plotStyle);
+                                //MessageBox.Show($"Printer: {printer}, PaperSize: {paperSize}, PlotStyle: {plotStyle}, Orientation: {orientation}, PlotRotation: {plotRotation}");
+
 
                                 // We need to link the PlotInfo to the PlotSettings and then validate it
                                 pi.OverrideSettings = ps;
@@ -291,11 +311,14 @@ namespace EasyPrint
                                     MessageBox.Show("Another plot in progress.");
                                 }
                                 tr2.Commit();
-                            }                            
+                            }
+                            // Add a rectangle around the block
+                            ObjectId rectId = AddRectangle(db, minPoint, maxPoint, "_EP");
+                            rectangleIds.Add(rectId);
                         }
-                            tr.Commit();
-                        }
+
                     }
+                }
             }
             catch (System.Exception ex)
             {
@@ -312,7 +335,7 @@ namespace EasyPrint
         {
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
-            MessageBox.Show($"Printer: {printer}, PaperSize: {paperSize}, PlotStyle: {plotStyle}, Orientation: {orientation}");
+            //MessageBox.Show($"Printer: {printer}, PaperSize: {paperSize}, PlotStyle: {plotStyle}, Orientation: {orientation}");
             if (PlotFactory.ProcessPlotState == ProcessPlotState.NotPlotting)
             {
                 mainForm.WindowState = FormWindowState.Minimized;
@@ -485,6 +508,27 @@ namespace EasyPrint
             string logFilePath = "error.log";
             string logMessage = $"{System.DateTime.Now}: {ex.Message}\n{ex.StackTrace}\n";
             File.AppendAllText(logFilePath, logMessage);
+            MessageBox.Show($"An error occurred: {ex.Message}\n\nPlease check the log file for more details.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        public static void DeleteExistingRectangles(Database db, string layerName)
+        {
+            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            using (DocumentLock documentLock = doc.LockDocument())
+            {
+                using (Transaction tr = db.TransactionManager.StartTransaction())
+                {
+                    BlockTableRecord btr = (BlockTableRecord)tr.GetObject(db.CurrentSpaceId, OpenMode.ForWrite);
+                    foreach (ObjectId objId in btr)
+                    {
+                        Entity ent = tr.GetObject(objId, OpenMode.ForWrite) as Entity;
+                        if (ent != null && ent.Layer == layerName && ent is Polyline)
+                        {
+                            ent.Erase();
+                        }
+                    }
+                    tr.Commit();
+                }
+            }
         }
         public static void DeleteRectangles(MainForm mainForm)
         {
@@ -495,14 +539,18 @@ namespace EasyPrint
 
                 try
                 {
-                    using (Transaction tr = db.TransactionManager.StartTransaction())
+                    using (DocumentLock documentLock = doc.LockDocument())
                     {
-                        foreach (ObjectId rectId in rectangleIds)
+
+                        using (Transaction tr = db.TransactionManager.StartTransaction())
                         {
-                            Entity ent = (Entity)tr.GetObject(rectId, OpenMode.ForWrite);
-                            ent.Erase();
+                            foreach (ObjectId rectId in rectangleIds)
+                            {
+                                Entity ent = (Entity)tr.GetObject(rectId, OpenMode.ForWrite);
+                                ent.Erase();
+                            }
+                            tr.Commit();
                         }
-                        tr.Commit();
                     }
                 }
                 catch (System.Exception ex)
