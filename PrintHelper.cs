@@ -55,7 +55,7 @@ namespace EasyPrint
             {
                 LogError(ex);
             }
-
+            MessageBox.Show($"Retrieved {blocks.Count} blocks with name {blockName}");
             return blocks;
         }
 
@@ -146,7 +146,7 @@ namespace EasyPrint
             Database db = doc.Database;
 
             Autodesk.AutoCAD.ApplicationServices.Application.SetSystemVariable("BACKGROUNDPLOT", 0);
-
+            MessageBox.Show($"Printer: {printer}, PaperSize: {paperSize}, PlotStyle: {plotStyle}, Copies: {copies}, Orientation: {orientation}");
             try
             {
                 for (int i = 0; i < copies; i++)
@@ -279,7 +279,7 @@ namespace EasyPrint
         {
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
             Database db = doc.Database;
-
+            MessageBox.Show($"Printer: {printer}, PaperSize: {paperSize}, PlotStyle: {plotStyle}, Orientation: {orientation}");
             if (PlotFactory.ProcessPlotState == ProcessPlotState.NotPlotting)
             {
                 mainForm.WindowState = FormWindowState.Minimized;
