@@ -15,7 +15,7 @@ EasyPrint is a .NET application for printing title blocks in AutoCAD with enhanc
 3. Build the solution.
 
 ## Usage
-1. Open AutoCAD and load the EasyPrint application.
+1. Open AutoCAD and netload the EasyPrint application.
 2. Use the "EP" command to open the EasyPrint interface.
 3. Select your printer, paper size, and other settings.
 4. Click Print or Preview to print your title blocks.
