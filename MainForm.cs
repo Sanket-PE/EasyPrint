@@ -1,10 +1,12 @@
-﻿using System;
+﻿﻿using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
+using System.Windows.Media.Animation;
 
 namespace EasyPrint
 {
@@ -179,12 +181,18 @@ namespace EasyPrint
                 string plotStyle = comboboxPlotstyle.SelectedItem.ToString();
                 string blockName = textBoxBlockName.Text;
                 int copies = int.Parse(textBoxCopies.Text);
-                string orientation = comboBoxOrientation.SelectedItem.ToString();             
-                string sortOrder = GetSelectedSortOrder();
+                string orientation = comboBoxOrientation.SelectedItem.ToString();
+                //string sortOrder = GetSelectedSortOrder();
 
                 // Perform the printing operation based on the user selections
                 List<BlockReference> blocks = PrintHelper.GetBlocks(Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database, blockName);
-                blocks = PrintHelper.SortBlocks(blocks, sortOrder);               
+                //blocks = PrintHelper.SortBlocks(blocks, sortOrder);
+
+                // Extract drawing numbers from the blocks
+                var blocksWithNumbers = PrintHelper.GetNumbersFromDrawings(blocks, "DWGNO");
+
+                // Sort blocks based on drawing numbers
+                var sortedBlocks = blocksWithNumbers.OrderBy(b => b.Item2).Select(b => b.Item1).ToList();
 
                 PrintHelper.PrintBlocks(blocks, printer, paperSize, plotStyle, copies, orientation, this);               
 

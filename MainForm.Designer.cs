@@ -55,6 +55,7 @@
             this.buttonPreview = new System.Windows.Forms.Button();
             this.buttonClose = new System.Windows.Forms.Button();
             this.buttonHow = new System.Windows.Forms.Button();
+            this.buttonSelect = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox6.SuspendLayout();
@@ -128,6 +129,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.buttonSelect);
             this.groupBox2.Controls.Add(this.textBoxBlockName);
             this.groupBox2.Controls.Add(this.All);
             this.groupBox2.Controls.Add(this.label5);
@@ -158,7 +160,7 @@
             this.All.AutoSize = true;
             this.All.Checked = true;
             this.All.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.All.Location = new System.Drawing.Point(287, 65);
+            this.All.Location = new System.Drawing.Point(232, 63);
             this.All.Name = "All";
             this.All.Size = new System.Drawing.Size(37, 17);
             this.All.TabIndex = 11;
@@ -183,7 +185,7 @@
             "Landscape"});
             this.comboBoxOrientation.Location = new System.Drawing.Point(160, 62);
             this.comboBoxOrientation.Name = "comboBoxOrientation";
-            this.comboBoxOrientation.Size = new System.Drawing.Size(105, 21);
+            this.comboBoxOrientation.Size = new System.Drawing.Size(66, 21);
             this.comboBoxOrientation.TabIndex = 7;
             // 
             // textBoxCopies
@@ -324,6 +326,15 @@
             this.buttonHow.Text = "?";
             this.buttonHow.UseVisualStyleBackColor = true;
             // 
+            // buttonSelect
+            // 
+            this.buttonSelect.Location = new System.Drawing.Point(271, 61);
+            this.buttonSelect.Name = "buttonSelect";
+            this.buttonSelect.Size = new System.Drawing.Size(59, 20);
+            this.buttonSelect.TabIndex = 16;
+            this.buttonSelect.Text = "Select";
+            this.buttonSelect.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -382,5 +393,6 @@
         private System.Windows.Forms.RadioButton radioButtonRLTB;
         private System.Windows.Forms.RadioButton radioButtonRLBT;
         private System.Windows.Forms.Label textBoxBlockName;
+        private System.Windows.Forms.Button buttonSelect;
     }
 }

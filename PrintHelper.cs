@@ -8,13 +8,14 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.IO;
 using System;
+using Autodesk.AutoCAD.EditorInput;
 
 namespace EasyPrint
 {
     public class PrintHelper
     {
         //Static variable to store the selected block information.
-        public static ObjectId ? selectedBlockId = null;
+        public static ObjectId? selectedBlockId = null;
         [CommandMethod("EP")]
         public void EP()
         {
@@ -57,6 +58,41 @@ namespace EasyPrint
             }
             //MessageBox.Show($"Retrieved {blocks.Count} blocks with name {blockName}");
             return blocks;
+        }
+
+        public static List<(BlockReference, string)> GetNumbersFromDrawings(List<BlockReference> blocks, string attributeName)
+        {
+            List<(BlockReference, string)> blocksWithNumbers = new List<(BlockReference, string)>();
+            try
+            {
+
+                using (Transaction tr = blocks.First().Database.TransactionManager.StartTransaction())
+                {
+                    //BlockTable bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+                    //BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForRead) as BlockTableRecord;
+
+                    foreach (BlockReference blockRef in blocks)
+                    {
+                        foreach (ObjectId attId in blockRef.AttributeCollection)
+                        {
+                            AttributeReference attRef = tr.GetObject(attId, OpenMode.ForRead) as AttributeReference;
+                            if (attRef != null && attRef.Tag == attributeName)
+                            {
+                                blocksWithNumbers.Add((blockRef, attRef.TextString));
+                                break;
+                            }
+                        }
+
+                    }
+                    tr.Commit();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                LogError(ex);
+            }
+            //MessageBox.Show($"Retrieved {blocks.Count} blocks with name {blockName}");
+            return blocksWithNumbers;
         }
 
         //Get sorted list as per user selection, in list.
@@ -200,6 +236,12 @@ namespace EasyPrint
 
                     // Add the _EP layer
                     AddLayer(db, "_EP", Autodesk.AutoCAD.Colors.Color.FromColor(System.Drawing.Color.Red));
+
+                    // Extract drawing numbers from the blocks
+                    var blocksWithNumbers = GetNumbersFromDrawings(blocks, "DWGNO");
+
+                    // Sort blocks based on drawing numbers
+                    var sortedBlocks = blocksWithNumbers.OrderBy(b => b.Item2).Select(b => b.Item1).ToList();
 
                     for (int i = 0; i < copies; i++)
                     {
