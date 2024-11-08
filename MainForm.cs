@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.EditorInput;
-using System.Windows.Media.Animation;
+
 
 namespace EasyPrint
 {
@@ -227,11 +227,11 @@ namespace EasyPrint
                 string blockName = textBoxBlockName.Text;
                 int copies = int.Parse(textBoxCopies.Text);
                 string orientation = comboBoxOrientation.SelectedItem.ToString();               
-                string sortOrder = GetSelectedSortOrder();
+                //string sortOrder = GetSelectedSortOrder();
 
                 // Perform the printing operation based on the user selections
                 List<BlockReference> blocks = PrintHelper.GetBlocks(Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database, blockName);
-                blocks = PrintHelper.SortBlocks(blocks, sortOrder);
+                //blocks = PrintHelper.SortBlocks(blocks, sortOrder);
 
                 PrintHelper.PreviewBlocks(blocks, printer, paperSize, plotStyle, orientation, this);             
 
@@ -244,15 +244,15 @@ namespace EasyPrint
             }
         }
      
-        private string GetSelectedSortOrder()
-        {
-            if (radioButtonLRTB.Checked) return "LeftRightTopBottom";
-            if (radioButtonRLTB.Checked) return "RightLeftTopBottom";
-            if (radioButtonLRBT.Checked) return "LeftRightBottomTop";
-            if (radioButtonRLBT.Checked) return "RightLeftBottomTop";
-            return null;
-             //MessageBox.Show("Select a sort order");
-        }
+        //private string GetSelectedSortOrder()
+        //{
+        //    if (radioButtonLRTB.Checked) return "LeftRightTopBottom";
+        //    if (radioButtonRLTB.Checked) return "RightLeftTopBottom";
+        //    if (radioButtonLRBT.Checked) return "LeftRightBottomTop";
+        //    if (radioButtonRLBT.Checked) return "RightLeftBottomTop";
+        //    return null;
+        //     //MessageBox.Show("Select a sort order");
+        //}
         private void SetDefaultComboBoxValue(ComboBox comboBox, string defaultValue)
         {
             int index = comboBox.Items.IndexOf(defaultValue);

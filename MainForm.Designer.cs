@@ -46,19 +46,12 @@
             this.label4 = new System.Windows.Forms.Label();
             this.buttonPickBlock = new System.Windows.Forms.Button();
             this.radioButtonBlock = new System.Windows.Forms.RadioButton();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.radioButtonRLBT = new System.Windows.Forms.RadioButton();
-            this.radioButtonRLTB = new System.Windows.Forms.RadioButton();
-            this.radioButtonLRBT = new System.Windows.Forms.RadioButton();
-            this.radioButtonLRTB = new System.Windows.Forms.RadioButton();
             this.buttonPrint = new System.Windows.Forms.Button();
             this.buttonPreview = new System.Windows.Forms.Button();
             this.buttonClose = new System.Windows.Forms.Button();
             this.buttonHow = new System.Windows.Forms.Button();
-            this.buttonSelect = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.groupBox6.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -129,7 +122,6 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.buttonSelect);
             this.groupBox2.Controls.Add(this.textBoxBlockName);
             this.groupBox2.Controls.Add(this.All);
             this.groupBox2.Controls.Add(this.label5);
@@ -235,64 +227,9 @@
             this.radioButtonBlock.Text = "Block";
             this.radioButtonBlock.UseVisualStyleBackColor = true;
             // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.radioButtonRLBT);
-            this.groupBox6.Controls.Add(this.radioButtonRLTB);
-            this.groupBox6.Controls.Add(this.radioButtonLRBT);
-            this.groupBox6.Controls.Add(this.radioButtonLRTB);
-            this.groupBox6.Location = new System.Drawing.Point(13, 215);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(335, 68);
-            this.groupBox6.TabIndex = 5;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Sort";
-            // 
-            // radioButtonRLBT
-            // 
-            this.radioButtonRLBT.AutoSize = true;
-            this.radioButtonRLBT.Location = new System.Drawing.Point(187, 41);
-            this.radioButtonRLBT.Name = "radioButtonRLBT";
-            this.radioButtonRLBT.Size = new System.Drawing.Size(129, 17);
-            this.radioButtonRLBT.TabIndex = 16;
-            this.radioButtonRLBT.Text = "Right-Left-Bottom-Top";
-            this.radioButtonRLBT.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonRLTB
-            // 
-            this.radioButtonRLTB.AutoSize = true;
-            this.radioButtonRLTB.Location = new System.Drawing.Point(187, 21);
-            this.radioButtonRLTB.Name = "radioButtonRLTB";
-            this.radioButtonRLTB.Size = new System.Drawing.Size(129, 17);
-            this.radioButtonRLTB.TabIndex = 15;
-            this.radioButtonRLTB.Text = "Right-Left-Top-Bottom";
-            this.radioButtonRLTB.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonLRBT
-            // 
-            this.radioButtonLRBT.AutoSize = true;
-            this.radioButtonLRBT.Location = new System.Drawing.Point(25, 41);
-            this.radioButtonLRBT.Name = "radioButtonLRBT";
-            this.radioButtonLRBT.Size = new System.Drawing.Size(129, 17);
-            this.radioButtonLRBT.TabIndex = 14;
-            this.radioButtonLRBT.Text = "Left-Right-Bottom-Top";
-            this.radioButtonLRBT.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonLRTB
-            // 
-            this.radioButtonLRTB.AutoSize = true;
-            this.radioButtonLRTB.Checked = true;
-            this.radioButtonLRTB.Location = new System.Drawing.Point(25, 21);
-            this.radioButtonLRTB.Name = "radioButtonLRTB";
-            this.radioButtonLRTB.Size = new System.Drawing.Size(129, 17);
-            this.radioButtonLRTB.TabIndex = 13;
-            this.radioButtonLRTB.TabStop = true;
-            this.radioButtonLRTB.Text = "Left-Right-Top-Bottom";
-            this.radioButtonLRTB.UseVisualStyleBackColor = true;
-            // 
             // buttonPrint
             // 
-            this.buttonPrint.Location = new System.Drawing.Point(12, 286);
+            this.buttonPrint.Location = new System.Drawing.Point(11, 218);
             this.buttonPrint.Name = "buttonPrint";
             this.buttonPrint.Size = new System.Drawing.Size(66, 31);
             this.buttonPrint.TabIndex = 7;
@@ -301,7 +238,7 @@
             // 
             // buttonPreview
             // 
-            this.buttonPreview.Location = new System.Drawing.Point(87, 286);
+            this.buttonPreview.Location = new System.Drawing.Point(83, 218);
             this.buttonPreview.Name = "buttonPreview";
             this.buttonPreview.Size = new System.Drawing.Size(105, 31);
             this.buttonPreview.TabIndex = 8;
@@ -310,7 +247,7 @@
             // 
             // buttonClose
             // 
-            this.buttonClose.Location = new System.Drawing.Point(200, 286);
+            this.buttonClose.Location = new System.Drawing.Point(194, 218);
             this.buttonClose.Name = "buttonClose";
             this.buttonClose.Size = new System.Drawing.Size(105, 31);
             this.buttonClose.TabIndex = 9;
@@ -319,33 +256,23 @@
             // 
             // buttonHow
             // 
-            this.buttonHow.Location = new System.Drawing.Point(313, 286);
+            this.buttonHow.Location = new System.Drawing.Point(305, 218);
             this.buttonHow.Name = "buttonHow";
             this.buttonHow.Size = new System.Drawing.Size(36, 31);
             this.buttonHow.TabIndex = 10;
             this.buttonHow.Text = "?";
             this.buttonHow.UseVisualStyleBackColor = true;
             // 
-            // buttonSelect
-            // 
-            this.buttonSelect.Location = new System.Drawing.Point(271, 61);
-            this.buttonSelect.Name = "buttonSelect";
-            this.buttonSelect.Size = new System.Drawing.Size(59, 20);
-            this.buttonSelect.TabIndex = 16;
-            this.buttonSelect.Text = "Select";
-            this.buttonSelect.UseVisualStyleBackColor = true;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Menu;
-            this.ClientSize = new System.Drawing.Size(354, 324);
+            this.ClientSize = new System.Drawing.Size(354, 255);
             this.Controls.Add(this.buttonHow);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.buttonPreview);
             this.Controls.Add(this.buttonPrint);
-            this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -359,8 +286,6 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox6.ResumeLayout(false);
-            this.groupBox6.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -373,7 +298,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox comboboxPrinter;
-        private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.ComboBox comboboxPlotstyle;
         private System.Windows.Forms.ComboBox comboboxPaper;
         private System.Windows.Forms.RadioButton radioButtonBlock;
@@ -388,11 +312,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox comboBoxOrientation;
         private System.Windows.Forms.CheckBox All;
-        private System.Windows.Forms.RadioButton radioButtonLRBT;
-        private System.Windows.Forms.RadioButton radioButtonLRTB;
-        private System.Windows.Forms.RadioButton radioButtonRLTB;
-        private System.Windows.Forms.RadioButton radioButtonRLBT;
         private System.Windows.Forms.Label textBoxBlockName;
-        private System.Windows.Forms.Button buttonSelect;
     }
 }

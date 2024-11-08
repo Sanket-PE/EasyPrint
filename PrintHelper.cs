@@ -96,30 +96,30 @@ namespace EasyPrint
         }
 
         //Get sorted list as per user selection, in list.
-        public static List<BlockReference> SortBlocks(List<BlockReference> blocks, string sortOrder)
-        {
-            try
-            {
-                switch (sortOrder)
-                {
-                    case "LeftRightTopBottom":
-                        return blocks.OrderBy(b => b.Position.X).ThenBy(b => b.Position.Y).ToList();
-                    case "RightLeftTopBottom":
-                        return blocks.OrderByDescending(b => b.Position.X).ThenBy(b => b.Position.Y).ToList();
-                    case "LeftRightBottomTop":
-                        return blocks.OrderBy(b => b.Position.X).ThenByDescending(b => b.Position.Y).ToList();
-                    case "RightLeftBottomTop":
-                        return blocks.OrderByDescending(b => b.Position.X).ThenByDescending(b => b.Position.Y).ToList();
-                    default:
-                        return blocks;
-                }
-            }
-            catch (System.Exception ex)
-            {
-                LogError(ex);
-                return blocks;
-            }
-        }
+        //public static List<BlockReference> SortBlocks(List<BlockReference> blocks, string sortOrder)
+        //{
+        //    try
+        //    {
+        //        switch (sortOrder)
+        //        {
+        //            case "LeftRightTopBottom":
+        //                return blocks.OrderBy(b => b.Position.X).ThenBy(b => b.Position.Y).ToList();
+        //            case "RightLeftTopBottom":
+        //                return blocks.OrderByDescending(b => b.Position.X).ThenBy(b => b.Position.Y).ToList();
+        //            case "LeftRightBottomTop":
+        //                return blocks.OrderBy(b => b.Position.X).ThenByDescending(b => b.Position.Y).ToList();
+        //            case "RightLeftBottomTop":
+        //                return blocks.OrderByDescending(b => b.Position.X).ThenByDescending(b => b.Position.Y).ToList();
+        //            default:
+        //                return blocks;
+        //        }
+        //    }
+        //    catch (System.Exception ex)
+        //    {
+        //        LogError(ex);
+        //        return blocks;
+        //    }
+        //}
 
         //Get local media name as per the canonical media name.
         public static (string[], string[]) GetPaperSizes(string printerName)
