@@ -60,6 +60,8 @@ namespace EasyPrint
             return blocks;
         }
 
+        public static ObjectId? selectedRectangleId = null;
+
         public static List<(BlockReference, string)> GetNumbersFromDrawings(List<BlockReference> blocks, string attributeName)
         {
             List<(BlockReference, string)> blocksWithNumbers = new List<(BlockReference, string)>();
@@ -217,6 +219,29 @@ namespace EasyPrint
 
             return rectId;
         }
+
+        //public static List<string> GetLayerNames(Database db)
+        //{
+        //    List <string> layersNames = new List<string>();
+        //    try
+        //    {
+        //        using (Transaction tr = db.TransactionManager.StartTransaction())
+        //        {
+        //            LayerTable lt = (LayerTable)tr.GetObject(db.LayerTableId, OpenMode.ForRead);
+        //            foreach (ObjectId layerId in lt)
+        //            {
+        //                LayerTableRecord ltr = (LayerTableRecord)tr.GetObject(layerId, OpenMode.ForRead);
+        //                layersNames.Add(ltr.Name);
+        //            }
+        //            tr.Commit();
+        //        }
+        //    }
+        //    catch (System.Exception ex)
+        //    {
+        //        LogError(ex);
+        //    }
+        //    return layersNames;
+        //}
         //Print Function.
         public static void PrintBlocks(List<BlockReference> blocks, string printer, string paperSize, string plotStyle, int copies, string orientation, MainForm mainForm)
         {
@@ -227,6 +252,8 @@ namespace EasyPrint
             Autodesk.AutoCAD.ApplicationServices.Application.SetSystemVariable("BACKGROUNDPLOT", 0);
             List<ObjectId> rectangleIds = new List<ObjectId>();
             //MessageBox.Show($"Printer: {printer}, PaperSize: {paperSize}, PlotStyle: {plotStyle}, Copies: {copies}, Orientation: {orientation}");
+            Point2d minPoint1 = Point2d.Origin, maxPoint1 = Point2d.Origin;
+            Point2d minPoint2 = Point2d.Origin, maxPoint2 = Point2d.Origin;
             try
             {
                 using (DocumentLock documentLock = doc.LockDocument())
@@ -237,6 +264,28 @@ namespace EasyPrint
                     // Add the _EP layer
                     AddLayer(db, "_EP", Autodesk.AutoCAD.Colors.Color.FromColor(System.Drawing.Color.Red));
 
+                    // Determine the printable area
+                    if (selectedRectangleId.HasValue)
+                    {
+                        using (Transaction tr = db.TransactionManager.StartTransaction())
+                        {
+                            Polyline rect = tr.GetObject(selectedRectangleId.Value, OpenMode.ForRead) as Polyline;
+                            if (rect != null)
+                            {
+                                Extents3d extents3d = rect.GeometricExtents;
+                                minPoint1 = new Point2d(extents3d.MinPoint.X, extents3d.MinPoint.Y);
+                                maxPoint1 = new Point2d(extents3d.MaxPoint.X, extents3d.MaxPoint.Y);
+
+                            }
+                            else
+                            {
+                                MessageBox.Show("Selected rectangle is not valid.");
+                                return;
+                            }
+                            tr.Commit();
+                        }
+                    }
+
                     // Extract drawing numbers from the blocks
                     var blocksWithNumbers = GetNumbersFromDrawings(blocks, "DWGNO");
 
@@ -245,15 +294,26 @@ namespace EasyPrint
 
                     for (int i = 0; i < copies; i++)
                     {
-
+                        Point2d minPoint, maxPoint;
+                        
                         foreach (BlockReference blockRef in blocks)
                         {
                             Extents3d extents3d = blockRef.GeometricExtents;
-                            Point2d minPoint = new Point2d(extents3d.MinPoint.X, extents3d.MinPoint.Y);
-                            Point2d maxPoint = new Point2d(extents3d.MaxPoint.X, extents3d.MaxPoint.Y);
+                            minPoint2 = new Point2d(extents3d.MinPoint.X, extents3d.MinPoint.Y);
+                            maxPoint2 = new Point2d(extents3d.MaxPoint.X, extents3d.MaxPoint.Y);
 
                             //MessageBox.Show($"\nPrinting block: {blockRef.Name},min: {minPoint},max: {maxPoint}");
-                           
+                            if (selectedRectangleId.HasValue)
+                            {
+                                minPoint = minPoint1;
+                                maxPoint = maxPoint1;
+                            }
+                            else
+                            {
+                                minPoint = minPoint2;
+                                maxPoint = maxPoint2;
+                            }
+
                             using (Transaction tr2 = db.TransactionManager.StartTransaction())
                             {
                                 // We'll be plotting the current layout
@@ -272,7 +332,7 @@ namespace EasyPrint
                                 PlotSettingsValidator psv = PlotSettingsValidator.Current;
 
                                 // We'll plot the extents, centered and scaled to fit
-                                psv.SetPlotWindowArea(ps, new Extents2d(minPoint, maxPoint));
+                                psv.SetPlotWindowArea(ps,new Extents2d(minPoint, maxPoint));
                                 psv.SetPlotType(ps, Autodesk.AutoCAD.DatabaseServices.PlotType.Window);
                                 psv.SetUseStandardScale(ps, true);
                                 psv.SetStdScaleType(ps, StdScaleType.ScaleToFit);
@@ -360,6 +420,7 @@ namespace EasyPrint
                         }
 
                     }
+                    
                 }
             }
             catch (System.Exception ex)

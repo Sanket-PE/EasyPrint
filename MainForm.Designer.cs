@@ -136,12 +136,12 @@
             this.groupBox2.Size = new System.Drawing.Size(336, 91);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "tpl";
+            this.groupBox2.Text = "Method";
             // 
             // textBoxBlockName
             // 
             this.textBoxBlockName.AutoSize = true;
-            this.textBoxBlockName.Location = new System.Drawing.Point(149, 24);
+            this.textBoxBlockName.Location = new System.Drawing.Point(149, 22);
             this.textBoxBlockName.Name = "textBoxBlockName";
             this.textBoxBlockName.Size = new System.Drawing.Size(16, 13);
             this.textBoxBlockName.TabIndex = 15;
@@ -152,7 +152,7 @@
             this.All.AutoSize = true;
             this.All.Checked = true;
             this.All.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.All.Location = new System.Drawing.Point(232, 63);
+            this.All.Location = new System.Drawing.Point(271, 65);
             this.All.Name = "All";
             this.All.Size = new System.Drawing.Size(37, 17);
             this.All.TabIndex = 11;
@@ -162,7 +162,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(97, 63);
+            this.label5.Location = new System.Drawing.Point(97, 64);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(58, 13);
             this.label5.TabIndex = 10;
@@ -175,14 +175,14 @@
             "Auto",
             "Portrait",
             "Landscape"});
-            this.comboBoxOrientation.Location = new System.Drawing.Point(160, 62);
+            this.comboBoxOrientation.Location = new System.Drawing.Point(160, 63);
             this.comboBoxOrientation.Name = "comboBoxOrientation";
-            this.comboBoxOrientation.Size = new System.Drawing.Size(66, 21);
+            this.comboBoxOrientation.Size = new System.Drawing.Size(97, 21);
             this.comboBoxOrientation.TabIndex = 7;
             // 
             // textBoxCopies
             // 
-            this.textBoxCopies.Location = new System.Drawing.Point(52, 60);
+            this.textBoxCopies.Location = new System.Drawing.Point(52, 61);
             this.textBoxCopies.Name = "textBoxCopies";
             this.textBoxCopies.Size = new System.Drawing.Size(39, 20);
             this.textBoxCopies.TabIndex = 9;
@@ -191,7 +191,7 @@
             // Copies
             // 
             this.Copies.AutoSize = true;
-            this.Copies.Location = new System.Drawing.Point(7, 61);
+            this.Copies.Location = new System.Drawing.Point(7, 62);
             this.Copies.Name = "Copies";
             this.Copies.Size = new System.Drawing.Size(39, 13);
             this.Copies.TabIndex = 8;
@@ -200,7 +200,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(108, 23);
+            this.label4.Location = new System.Drawing.Point(108, 21);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(35, 13);
             this.label4.TabIndex = 7;
@@ -208,7 +208,7 @@
             // 
             // buttonPickBlock
             // 
-            this.buttonPickBlock.Location = new System.Drawing.Point(271, 20);
+            this.buttonPickBlock.Location = new System.Drawing.Point(271, 18);
             this.buttonPickBlock.Name = "buttonPickBlock";
             this.buttonPickBlock.Size = new System.Drawing.Size(59, 20);
             this.buttonPickBlock.TabIndex = 7;
@@ -219,11 +219,10 @@
             // 
             this.radioButtonBlock.AutoSize = true;
             this.radioButtonBlock.Checked = true;
-            this.radioButtonBlock.Location = new System.Drawing.Point(7, 20);
+            this.radioButtonBlock.Location = new System.Drawing.Point(7, 18);
             this.radioButtonBlock.Name = "radioButtonBlock";
             this.radioButtonBlock.Size = new System.Drawing.Size(52, 17);
             this.radioButtonBlock.TabIndex = 0;
-            this.radioButtonBlock.TabStop = true;
             this.radioButtonBlock.Text = "Block";
             this.radioButtonBlock.UseVisualStyleBackColor = true;
             // 

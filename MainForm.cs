@@ -19,11 +19,14 @@ namespace EasyPrint
             // Attach event handlers
             comboboxPrinter.SelectedIndexChanged += new EventHandler(comboboxPrinter_SelectedIndexChanged);
             comboboxPaper.SelectedIndexChanged += new EventHandler(comboboxPaper_SelectedIndexChanged);
-            buttonPickBlock.Click += new EventHandler(ButtonPickBlock_Click);         
+            buttonPickBlock.Click += new EventHandler(ButtonPickBlock_Click);
+            //buttonPickRectangle.Click += new EventHandler(ButtonPickRectangle_Click);
             buttonPrint.Click += new EventHandler(ButtonPrint_Click);
             buttonPreview.Click += new EventHandler(ButtonPreview_Click);
             buttonClose.Click += new EventHandler(ButtonClose_Click);
             buttonHow.Click += new EventHandler(ButtonHow_Click);
+            //radioButtonBlock.CheckedChanged += new EventHandler(RadioButton_CheckedChanged);
+            //radioButtonRectangle.CheckedChanged += new EventHandler(RadioButton_CheckedChanged);
             this.FormClosing += MainForm_FormClosing;
         }
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -34,6 +37,11 @@ namespace EasyPrint
         {
             this.Close();
         }
+
+        //private void radioButtonRectangle_Click(Object sender, EventArgs e)
+        //{
+        //    this.Close();
+        //}
         private void ButtonHow_Click(object sender, EventArgs e) 
         {
             MessageBox.Show("(1) Pick a block from drawing \n(2) Select Sort Order \n(3) Click Print/Preview.\n(4) For any Issue or error, \nPlease send a snapshot or error code to: \nsanketpatel.ca@gmail.com");
@@ -42,6 +50,7 @@ namespace EasyPrint
         private void MainForm_Load(object sender, EventArgs e)
         {
             PopulateComboboxes();
+            
         }
 
         private void PopulateComboboxes()
@@ -71,6 +80,13 @@ namespace EasyPrint
             if (comboboxPaper.SelectedIndex == -1 && comboboxPaper.Items.Count > 0) comboboxPaper.SelectedIndex = 0;
             if (comboboxPlotstyle.SelectedIndex == -1 && comboboxPlotstyle.Items.Count > 0) comboboxPlotstyle.SelectedIndex = 0;
             if (comboBoxOrientation.SelectedIndex == -1 && comboBoxOrientation.Items.Count > 0) comboBoxOrientation.SelectedIndex = 0;
+
+            //Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            //Database db = doc.Database;
+            //List<string> layerNames = PrintHelper.GetLayerNames(db);
+            //comboBoxLayer.Items.Clear();
+            //comboBoxLayer.Items.AddRange(layerNames.ToArray());
+            //comboBoxLayer.SelectedIndex = 0;            
         }
 
         private (string[],string[]) paperSizes,canoName;
@@ -98,24 +114,23 @@ namespace EasyPrint
         }
 
 
+        //// Add this method to handle radio button changes
         //private void RadioButton_CheckedChanged(object sender, EventArgs e)
         //{
         //    if (radioButtonBlock.Checked)
         //    {
-        //        EnableControls(true, false);
+        //        buttonPickBlock.Enabled = true;
+        //        comboBoxLayer.Enabled = false;
+        //        buttonPickRectangle.Enabled = false;
         //    }
         //    else if (radioButtonRectangle.Checked)
         //    {
-        //        EnableControls(false, true);
+        //        buttonPickBlock.Enabled = false;
+        //        comboBoxLayer.Enabled = true;
+        //        buttonPickRectangle.Enabled = true;
         //    }
         //}
-        //private void EnableControls(bool blockEnabled, bool rectangleEnabled)
-        //{
-        //    radioButtonBlock.Enabled = blockEnabled;
-        //    buttonPickBlock.Enabled = blockEnabled;
-        //    radioButtonRectangle.Enabled= rectangleEnabled;
-        //    buttonPickRectangle.Enabled = rectangleEnabled;
-        //}
+
         private void ButtonPickBlock_Click(object sender, EventArgs e)
         {
             Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
@@ -157,6 +172,31 @@ namespace EasyPrint
                 this.WindowState = FormWindowState.Normal;
             }
         }
+
+        //// Add this method to handle rectangle selection
+        //private void ButtonPickRectangle_Click(object sender, EventArgs e)
+        //{
+        //    Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+        //    Editor ed = doc.Editor;
+        //    PromptEntityOptions peo = new PromptEntityOptions("\nSelect a rectangle: ");
+        //    peo.SetRejectMessage("\nOnly rectangles are allowed.");
+        //    peo.AddAllowedClass(typeof(Polyline), true);
+        //    PromptEntityResult per = ed.GetEntity(peo);
+        //    if (per.Status == PromptStatus.OK)
+        //    {
+        //        using (Transaction tr = doc.TransactionManager.StartTransaction())
+        //        {
+        //            Polyline rect = tr.GetObject(per.ObjectId, OpenMode.ForRead) as Polyline;
+        //            if (rect != null && rect.Layer == comboBoxLayer.SelectedItem.ToString())
+        //            {
+        //                // Store the selected rectangle for later use
+        //                PrintHelper.selectedRectangleId = per.ObjectId;
+        //                MessageBox.Show("Rectangle selected.");
+        //            }
+        //            tr.Commit();
+        //        }
+        //    }
+        //}
 
         private void ButtonPrint_Click(object sender, EventArgs e)
         {
