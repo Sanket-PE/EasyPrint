@@ -602,5 +602,75 @@ namespace EasyPrint
             }
         }
 
+
+        [CommandMethod("EXPAT")]
+        public void EXPAT()
+        {
+            Document doc = Autodesk.AutoCAD.ApplicationServices.Application.DocumentManager.MdiActiveDocument;
+            Editor ed = doc.Editor;
+
+            //prompt the user to select a block
+            PromptEntityOptions peo = new PromptEntityOptions("\nSelect a title block ");
+            peo.SetRejectMessage("\nOnly blocks are allowed");
+            peo.AddAllowedClass(typeof(BlockReference), true);
+            PromptEntityResult per = ed.GetEntity(peo);
+
+            if (per.Status == PromptStatus.OK)
+            {
+                using (Transaction tr = doc.TransactionManager.StartTransaction())
+                {
+                    BlockReference blockRef = tr.GetObject(per.ObjectId, OpenMode.ForRead) as BlockReference;
+                    BlockTableRecord blockDef = tr.GetObject(blockRef.BlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
+                    string blockName = blockDef.Name;
+
+                    //Get all matching blocks
+                    List<BlockReference> blocks = GetBlocks(doc.Database, blockName);
+
+                    //Get attributes from all blocks
+                    List<Dictionary<string, string>> attributesList = new List<Dictionary<string, string>>();
+                    foreach (BlockReference blkref in blocks)
+                    { 
+                        Dictionary<string, string> attributes = new Dictionary<string, string>();
+                        foreach (ObjectId attId in blkref.AttributeCollection)
+                        {
+                            AttributeReference attRef = tr.GetObject(attId, OpenMode.ForRead) as AttributeReference;
+                            if (attRef != null)
+                            {
+                                attributes[attRef.Tag] = attRef.TextString;
+                            }
+                        }
+
+                        attributesList.Add(attributes);
+                    }
+                    // Export to CSV
+                    string dwgPath = doc.Name;
+                    string csvPath = Path.ChangeExtension(dwgPath, ".csv");
+                    ExportAttriutesToCSV(attributesList, csvPath);
+                    ed.WriteMessage($"\nAttributes exported to {csvPath}");
+                    tr.Commit();
+                    
+                }
+            }
+        }
+        private void ExportAttriutesToCSV(List<Dictionary<string, string>> attributesList, string csvPath)
+        {
+            using (StreamWriter sw = new StreamWriter(csvPath))
+            {
+                if (attributesList.Count > 0)
+                {
+                    //Write CSV Header
+                    var header = string.Join(",", attributesList[0].Keys);
+                    sw.WriteLine(header);
+
+                    //Write CSV Rows
+                    foreach (var attributes in attributesList) 
+                    {
+                        var row = string.Join(",", attributes.Values);
+                        sw.WriteLine(row);
+                    }
+                }
+
+            }
+        }
     }
 }
